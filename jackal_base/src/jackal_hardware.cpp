@@ -33,6 +33,7 @@
 
 #include <boost/assign.hpp>
 #include "jackal_base/jackal_hardware.h"
+#include <math.h>
 
 namespace jackal_base
 {
@@ -90,8 +91,9 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    std::cout << ros::Time::now().toSec() << std::endl;
-    
+    float num = sin(ros::Time::now().toSec()/1000000.0);
+    std::cout << num << std::endl;
+
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
     // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
     // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
