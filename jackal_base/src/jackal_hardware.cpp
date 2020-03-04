@@ -91,8 +91,8 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    float num = sin(ros::Time::now().toSec()/1.0);
-    std::cout << num << std::endl;
+    float num = sin(ros::Time::now().toSec());
+    std::cout << joints_[0].velocity << std::endl;
 
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
     // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
