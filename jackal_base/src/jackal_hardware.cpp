@@ -192,7 +192,7 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
 
 void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
-  connected_ = true;
+  // connected_ = true;
   time_last_connected_ = ros::Time::now();
 
   // Update buffers
@@ -238,7 +238,7 @@ void JackalHardware::checkTimeout()
   double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
 
   // Check if elapsed time is greater than timeout
-  if (time_elapsed > 0.25)
+  if (time_elapsed > 0.2)
   {
     // Switch status to disconnected and reset cmd_vel_reached flag
     if (connected_)
@@ -246,6 +246,9 @@ void JackalHardware::checkTimeout()
       connected_ = false;
       cmd_vel_reached_ = false;
     }
+  } else
+  {
+    connected_ = true;
   }
 }
 
