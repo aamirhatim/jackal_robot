@@ -130,6 +130,7 @@ void JackalHardware::publishDriveFromController()
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right * 10.0;
       cmd_drive_pub_.unlockAndPublish();
       std::cout << "timeout" << std::endl;
+      std::cout << v_left * 10.0 << std::endl << std::endl;
     } else
     {
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
