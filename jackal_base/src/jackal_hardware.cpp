@@ -235,7 +235,7 @@ bool JackalHardware::checkTimeout()
   return timeout;
 }
 
-void JackalHardware::updateCommand(const geometry_msgs::Twist::ConstPtr& msg)
+void JackalHardware::updateCommand(const geometry_msgs::Twist& msg)
 {
   user_cmd = msg;
   std::cout << msg.linear.x << std::endl;

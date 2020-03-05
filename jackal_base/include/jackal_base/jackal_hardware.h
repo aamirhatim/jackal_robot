@@ -72,7 +72,7 @@ public:
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
   void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
-  void updateCommand(const geometry_msgs::Twist::ConstPtr& msg);
+  void updateCommand(const geometry_msgs::Twist& msg);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
