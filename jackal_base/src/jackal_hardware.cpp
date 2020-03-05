@@ -108,8 +108,8 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       // Get current velocities
-      double left_vel = joints_[0].velocity / 10.0;
-      double right_vel = joints_[1].velocity / 10.0;
+      double left_vel = joints_[0].velocity;
+      double right_vel = joints_[1].velocity;
       std::cout << left_vel << std::endl;
 
       // Calculate deceleration
