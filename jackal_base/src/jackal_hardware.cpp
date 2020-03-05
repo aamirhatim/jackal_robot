@@ -97,12 +97,45 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
-    cmd_drive_pub_.unlockAndPublish();
+    // Get current time
+    ros::Time time_now = ros::Time::now();
 
-    // std::cout << joints_[0].velocity << std::endl;
+    // Get elapsed time since last heartbeat
+    double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
+    // std::cout << time_elapsed << std::endl;
+
+    // Check if elapsed time is greater than timeout
+    if (time_elapsed > 0.5)
+    {
+      // Get current velocities
+      double left_vel = joints_[0].velocity / 10.0;
+      double right_vel = joints_[1].velocity / 10.0;
+
+      // Calculate deceleration
+      double v_left = std::max(0.0, fabs(left_vel) - (1.5/50.0));
+      double v_right = std::max(0.0, fabs(right_vel) - (1.5/50.0));
+      if (left_vel < 0.0)
+      {
+        v_left = -v_left;
+      }
+      if (right_vel < 0.0)
+      {
+        v_right = -v_right;
+      }
+      // std::cout << sign_right << std::endl;
+
+      // Create Drive message
+      cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left * 10.0;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right * 10.0;
+      cmd_drive_pub_.unlockAndPublish();
+    } else
+    {
+      cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
+      cmd_drive_pub_.unlockAndPublish();
+    }    
   }
 }
 
@@ -139,7 +172,7 @@ void JackalHardware::publishSafeStop()
     cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right * 10.0;
 
     // Publish
-    cmd_drive_pub_.unlockAndPublish();
+    // cmd_drive_pub_.unlockAndPublish();
   }
 }
 
@@ -153,7 +186,7 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
 
 void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
-  connected_ = true;
+  // connected_ = true;
   time_last_connected_ = ros::Time::now();
 }
 

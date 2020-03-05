@@ -70,15 +70,7 @@ void controlThread(ros::Rate rate, jackal_base::JackalHardware* robot, controlle
 
     robot->copyJointsFromHardware();
     cm->update(ros::Time::now(), elapsed);
-
-    if (robot->checkTimeout())
-    {
-      robot->publishSafeStop();
-    } else
-    {
-      robot->publishDriveFromController();
-    }
-    
+    robot->publishDriveFromController();
     rate.sleep();
   }
 }
