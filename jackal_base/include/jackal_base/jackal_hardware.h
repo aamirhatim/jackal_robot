@@ -44,6 +44,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/JointState.h"
 #include "std_msgs/Empty.h"
+#include "geometry_msgs/Twist.h"
 
 
 namespace jackal_base
@@ -66,14 +67,17 @@ public:
   double left_buffer[3];
   double right_vel;
   double right_buffer[3];
+  geometry_msgs::Twist user_cmd;
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
   void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
+  void updateCommand(const geometry_msgs::Twist::ConstPtr& msg);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
   ros::Subscriber heartbeat_sub_;
+  ros::Subscriber user_cmd_sub_;
   realtime_tools::RealtimePublisher<jackal_msgs::Drive> cmd_drive_pub_;
 
   hardware_interface::JointStateInterface joint_state_interface_;

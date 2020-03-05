@@ -63,6 +63,7 @@ JackalHardware::JackalHardware()
   connected_ = false;
   time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
+  user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommand, this);
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -108,10 +109,7 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       // std::cout << "disconnect" << std::endl;
-      std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
-      // Get current velocities
-      // double left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
-      // double right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
+      // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
       // std::cout << left_vel << std::endl;
 
       // Calculate deceleration
@@ -214,7 +212,7 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   right_buffer[0] = joints_[1].velocity;
   right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
 
-  std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
+  // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 }
 
 bool JackalHardware::checkTimeout()
@@ -235,6 +233,12 @@ bool JackalHardware::checkTimeout()
   }
 
   return timeout;
+}
+
+void JackalHardware::updateCommand(const geometry_msgs::Twist::ConstPtr& msg)
+{
+  user_cmd = msg;
+  std::cout << msg.linear.x << std::endl;
 }
 
 }  // namespace jackal_base
