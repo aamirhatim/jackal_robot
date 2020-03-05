@@ -104,7 +104,7 @@ void JackalHardware::publishDriveFromController()
 
     // Get elapsed time since last heartbeat
     double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-    std::cout << time_elapsed << std::endl;
+    // std::cout << time_elapsed << std::endl;
 
     // Check if elapsed time is greater than timeout
     if (time_elapsed > 0.5)
@@ -138,36 +138,6 @@ void JackalHardware::publishDriveFromController()
 
       left_vel = v_left;
       right_vel = v_right;
-  } else if (!cmd_vel_reached_)
-  {
-    std::cout << "connected slow acc" << std::endl;
-    // Convert user command into approximate wheel speeds
-    double cmd_expected = fabs(user_cmd.linear.x) * 10.0;
-    
-    // Check if current wheel speed is greater than desired speed
-    if (fabs(left_vel) < cmd_expected)
-    {
-      // Slowly increase acceleration
-      double v_left = std::min(2.0, fabs(left_vel) + 0.02);
-      double v_right = std::min(2.0, fabs(right_vel) + 0.02);
-      if (left_vel < 0.0)
-      {
-        v_left = -v_left;
-      }
-      if (right_vel < 0.0)
-      {
-        v_right = -v_right;
-      }
-
-      // Create Drive message
-      cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
-      cmd_drive_pub_.unlockAndPublish();
-    } else
-    {
-      cmd_vel_reached_ = true;
-    }
   } else
     {
       std::cout << "connected" << std::endl;
