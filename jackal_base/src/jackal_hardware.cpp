@@ -114,7 +114,7 @@ void JackalHardware::publishDriveFromController()
         connected_ = false;
         cmd_vel_reached_ = false;
       }
-      // std::cout << "disconnect" << std::endl;
+      std::cout << "disconnect" << std::endl;
       // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 
       // Calculate deceleration
@@ -140,6 +140,7 @@ void JackalHardware::publishDriveFromController()
       right_vel = v_right;
   } else if (!cmd_vel_reached_)
   {
+    std::cout << "connected slow acc" << std::endl;
     // Convert user command into approximate wheel speeds
     double cmd_expected = fabs(user_cmd.linear.x) * 10.0;
     
@@ -169,11 +170,11 @@ void JackalHardware::publishDriveFromController()
     }
   } else
     {
+      std::cout << "connected" << std::endl;
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
       cmd_drive_pub_.unlockAndPublish();
-      // std::cout << "connected" << std::endl;
     }    
   }
 }
@@ -266,7 +267,7 @@ bool JackalHardware::checkTimeout()
 void JackalHardware::updateCommand(const geometry_msgs::Twist& msg)
 {
   user_cmd = msg;
-  std::cout << msg.linear.x << std::endl;
+  // std::cout << msg.linear.x << std::endl;
 }
 
 }  // namespace jackal_base
