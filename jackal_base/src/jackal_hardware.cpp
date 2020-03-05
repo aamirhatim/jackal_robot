@@ -102,7 +102,7 @@ void JackalHardware::publishDriveFromController()
 
     // Get elapsed time since last heartbeat
     double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-    // std::cout << time_elapsed << std::endl;
+    std::cout << time_elapsed << std::endl;
 
     // Check if elapsed time is greater than timeout
     if (time_elapsed > 0.5)
@@ -212,7 +212,7 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   right_buffer[0] = joints_[1].velocity;
   right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
 
-  std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
+  // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 }
 
 bool JackalHardware::checkTimeout()
