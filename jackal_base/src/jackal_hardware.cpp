@@ -233,20 +233,20 @@ double* JackalHardware::decelerate()
 
 void JackalHardware::updateBuffers()
 {
-  // Update left velocity buffer
-  // left_buffer[2] = left_buffer[1];
-  left_buffer[1] = left_buffer[0];
-  left_buffer[0] = joints_[0].velocity;
+  // // Update left velocity buffer
+  // // left_buffer[2] = left_buffer[1];
+  // left_buffer[1] = left_buffer[0];
+  // left_buffer[0] = joints_[0].velocity;
 
-  // Update right velocity buffer
-  // right_buffer[2] = right_buffer[1];
-  right_buffer[1] = right_buffer[0];
-  right_buffer[0] = joints_[1].velocity;
+  // // Update right velocity buffer
+  // // right_buffer[2] = right_buffer[1];
+  // right_buffer[1] = right_buffer[0];
+  // right_buffer[0] = joints_[1].velocity;
 
   if (cmd_vel_reached_)
   {
-    left_vel = (left_buffer[0] + left_buffer[1]) / 2.0;
-    right_vel = (right_buffer[0] + right_buffer[1]) / 2.0;
+    left_vel = joints_[0].velocity;
+    right_vel = joints_[1].velocity;
   }
 }
 

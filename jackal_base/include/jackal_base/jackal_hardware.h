@@ -64,9 +64,9 @@ public:
   bool cmd_vel_reached_;
   ros::Time time_last_connected_;
   double left_vel;
-  double left_buffer[2];
+  double left_buffer;
   double right_vel;
-  double right_buffer[2];
+  double right_buffer;
   geometry_msgs::Twist user_cmd;
 
 private:
