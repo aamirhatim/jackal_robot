@@ -58,9 +58,6 @@ public:
   void publishDriveFromController();
 
   // Low level safety stop control
-  void publishSafeStop();
-  bool checkTimeout();
-
   bool connected_;
   bool cmd_vel_reached_;
   ros::Time time_last_connected_;
@@ -73,7 +70,7 @@ public:
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
   void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
-  void updateCommand(const geometry_msgs::Twist& msg);
+  void updateCommandCallback(const geometry_msgs::Twist& msg);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;

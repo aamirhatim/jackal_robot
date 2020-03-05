@@ -64,7 +64,7 @@ JackalHardware::JackalHardware()
   cmd_vel_reached_ = false;
   time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
-  user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommand, this);
+  user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommandCallback, this);
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -179,43 +179,6 @@ void JackalHardware::publishDriveFromController()
   }
 }
 
-/**
- * Populates and publishes Drive message based on a slow deceleration speed profile.
- * Run only when remote connection to master is lost.
- *
- * Called from the controller thread.
- */
-void JackalHardware::publishSafeStop()
-{
-  if (cmd_drive_pub_.trylock())
-  {
-    // Get current velocities
-    double left_vel = joints_[0].velocity / 10.0;
-    double right_vel = joints_[1].velocity / 10.0;
-
-    // Calculate deceleration
-    double v_left = std::max(0.0, fabs(left_vel) - (1.5/50.0));
-    double v_right = std::max(0.0, fabs(right_vel) - (1.5/50.0));
-    if (left_vel < 0.0)
-    {
-      v_left = -v_left;
-    }
-    if (right_vel < 0.0)
-    {
-      v_right = -v_right;
-    }
-    // std::cout << sign_right << std::endl;
-
-    // Create Drive message
-    cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left * 10.0;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right * 10.0;
-
-    // Publish
-    // cmd_drive_pub_.unlockAndPublish();
-  }
-}
-
 void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg)
 {
   // Update the feedback message pointer to point to the current message. Block
@@ -244,34 +207,11 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
     left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
     right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
   }
-
-  // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 }
 
-bool JackalHardware::checkTimeout()
-{
-  bool timeout = false;
-
-  // Get current time
-  ros::Time time_now = ros::Time::now();
-
-  // Get elapsed time since last heartbeat
-  double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-  // std::cout << time_elapsed << std::endl;
-
-  // Check if elapsed time is greater than timeout
-  if (time_elapsed > 0.5)
-  {
-    timeout = true;
-  }
-
-  return timeout;
-}
-
-void JackalHardware::updateCommand(const geometry_msgs::Twist& msg)
+void JackalHardware::updateCommandCallback(const geometry_msgs::Twist& msg)
 {
   user_cmd = msg;
-  // std::cout << msg.linear.x << std::endl;
 }
 
 }  // namespace jackal_base
