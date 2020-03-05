@@ -126,7 +126,7 @@ void JackalHardware::publishDriveFromController()
       // std::cout << sign_right << std::endl;
 
       // Create Drive message
-      double v = sin(time_now);
+      double v = sin(time_now.toSec());
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v;
