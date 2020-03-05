@@ -108,7 +108,7 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       std::cout << "disconnect" << std::endl;
-      // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
+      std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
       // Get current velocities
       // double left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
       // double right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
