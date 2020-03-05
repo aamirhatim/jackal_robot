@@ -104,7 +104,7 @@ void JackalHardware::publishDriveFromController()
 
     // Get elapsed time since last heartbeat
     double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-    // std::cout << time_elapsed << std::endl;
+    std::cout << time_elapsed << std::endl;
 
     // Check if elapsed time is greater than timeout
     if (time_elapsed > 0.5)
