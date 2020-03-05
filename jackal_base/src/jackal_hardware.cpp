@@ -138,13 +138,15 @@ void JackalHardware::publishDriveFromController()
 
       left_vel = v_left;
       right_vel = v_right;
-  } else
+    } else if (!cmd_vel_reached_)
     {
-      if (!cmd_vel_reached_)
-      {
-        std::cout << "not reached" << std::endl;
-      }
-
+      std::cout << "vel not reached" << std::endl;
+      cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
+      cmd_drive_pub_.unlockAndPublish();
+    } else
+    {
       std::cout << "connected" << std::endl;
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
