@@ -34,7 +34,6 @@
 #include <boost/assign.hpp>
 #include "jackal_base/jackal_hardware.h"
 #include <math.h>
-#include <ros/master.h>
 
 namespace jackal_base
 {
@@ -148,8 +147,8 @@ void JackalHardware::publishDriveFromController()
         std::cout << cmd_expected << std::endl << right_vel << std::endl;
 
         // Calculate acceleration
-        double v_left = std::min(2.0, fabs(left_vel) + 0.03);
-        double v_right = std::min(2.0, fabs(right_vel) + 0.03);
+        double v_left = std::min(20.0, fabs(left_vel) + 0.03);
+        double v_right = std::min(20.0, fabs(right_vel) + 0.03);
         if (left_vel < 0.0)
         {
           v_left = -v_left;
