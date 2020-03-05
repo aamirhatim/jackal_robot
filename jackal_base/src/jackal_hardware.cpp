@@ -146,8 +146,8 @@ void JackalHardware::publishDriveFromController()
       {
         std::cout << "vel not reached" << std::endl;
         // Calculate acceleration
-        double v_left = std::min(2.0, fabs(left_vel) - 0.02);
-        double v_right = std::min(2.0, fabs(right_vel) - 0.02);
+        double v_left = std::min(2.0, fabs(left_vel) + 0.02);
+        double v_right = std::min(2.0, fabs(right_vel) + 0.02);
         if (left_vel < 0.0)
         {
           v_left = -v_left;
