@@ -137,7 +137,7 @@ void JackalHardware::publishDriveFromController()
       // std::cout << "timeout" << std::endl;
       // std::cout << v_left * 10.0 << std::endl << std::endl;
 
-      vels = v_left;
+      vels = v_left * 10;
       // std::cout << vels << std::endl;
     } else
     {
