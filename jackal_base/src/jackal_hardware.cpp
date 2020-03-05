@@ -34,6 +34,7 @@
 #include <boost/assign.hpp>
 #include "jackal_base/jackal_hardware.h"
 #include <math.h>
+#include <ros/master.h>
 
 namespace jackal_base
 {
@@ -56,7 +57,7 @@ JackalHardware::JackalHardware()
   registerInterface(&joint_state_interface_);
   registerInterface(&velocity_joint_interface_);
 
-  feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
+  feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);  
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -91,14 +92,42 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    float num = sin(ros::Time::now().toSec());
-    std::cout << joints_[0].velocity << std::endl;
+    // float num = sin(ros::Time::now().toSec());
+    // std::cout << joints_[0].velocity << std::endl;
 
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
-    // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = num;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = num;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
+    cmd_drive_pub_.unlockAndPublish();
+
+    std::cout << ros::master::check() << std::endl;
+  }
+}
+
+/**
+ * Populates and publishes Drive message based on a slow deceleration speed profile.
+ * Run only when remote connection to master is lost.
+ *
+ * Called from the controller thread.
+ */
+void JackalHardware::publishSafeStop()
+{
+  if (cmd_drive_pub_.trylock())
+  {
+    // Get current velocities
+    double left_vel = joints_[0].velocity;
+    double right_vel = joints_[1].velocity;
+
+    // Calculate deceleration
+    double v_left = 0.0;
+    double v_right = 0.0;
+
+    // Create Drive message
+    cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
+
+    // Publish
     cmd_drive_pub_.unlockAndPublish();
   }
 }
