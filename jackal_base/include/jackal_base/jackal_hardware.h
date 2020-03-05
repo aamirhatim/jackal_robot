@@ -55,11 +55,15 @@ public:
   void copyJointsFromHardware();
   void publishDriveFromController();
 
+  // Low level safety stop control
+  void publishSafeStop();
+
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
+  ros::Subscriber heartbeat_;
   realtime_tools::RealtimePublisher<jackal_msgs::Drive> cmd_drive_pub_;
 
   hardware_interface::JointStateInterface joint_state_interface_;
