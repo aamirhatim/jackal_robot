@@ -216,7 +216,16 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 
 void JackalHardware::updateCommandCallback(const geometry_msgs::Twist& msg)
 {
-  user_cmd = msg;
+  if (!cmd_vel_reached_)
+  {
+    if (fabs(msg.linear.x) < fabs(user_cmd.linear.x))
+    {
+      user_cmd = msg;
+    }
+  } else
+  {
+    user_cmd = msg;
+  }
 }
 
 void JackalHardware::checkTimeout()
