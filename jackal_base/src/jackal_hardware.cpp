@@ -99,10 +99,10 @@ void JackalHardware::publishDriveFromController()
   if (cmd_drive_pub_.trylock())
   {
     // Get current time
-    ros::Time time_now = ros::Time::now();
+    // ros::Time time_now = ros::Time::now();
 
     // Get elapsed time since last heartbeat
-    double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
+    // double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
     // std::cout << time_elapsed << std::endl;
 
     // Set initial velocity values
@@ -110,13 +110,13 @@ void JackalHardware::publishDriveFromController()
     double lin_vel_right = joints_[1].velocity_command;
 
     // Check if elapsed time is greater than timeout
-    if (time_elapsed > 0.25)
+    if (!connected_)
     {
-      if (connected_)
-      {
-        connected_ = false;
-        cmd_vel_reached_ = false;
-      }
+      // if (connected_)
+      // {
+      //   connected_ = false;
+      //   cmd_vel_reached_ = false;
+      // }
       // std::cout << "disconnect" << std::endl;
       // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 
