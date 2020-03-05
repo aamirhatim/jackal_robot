@@ -108,14 +108,14 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       // Get current velocities
-      double left_vel = joints_[0].velocity;
-      double right_vel = joints_[1].velocity;
+      double left_vel = joints_[0].velocity / 10.0;
+      double right_vel = joints_[1].velocity / 10.0;
       std::cout << left_vel << std::endl;
 
       // Calculate deceleration
-      double v_left = std::max(0.0, fabs(left_vel) - 0.1);
+      double v_left = std::max(0.0, fabs(left_vel) - 0.03);
       std::cout << v_left << std::endl;
-      double v_right = std::max(0.0, fabs(right_vel) - 0.1);
+      double v_right = std::max(0.0, fabs(right_vel) - 0.03);
       if (left_vel < 0.0)
       {
         v_left = -v_left;
@@ -129,8 +129,8 @@ void JackalHardware::publishDriveFromController()
       // double v = sin(time_now.toSec());
       std::cout << v_left << std::endl << std::endl;
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_left;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left * 10;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_left * 10;
       cmd_drive_pub_.unlockAndPublish();
       // std::cout << "timeout" << std::endl;
       // std::cout << v_left * 10.0 << std::endl << std::endl;
