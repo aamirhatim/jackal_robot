@@ -56,6 +56,8 @@ public:
   JackalHardware();
   void copyJointsFromHardware();
   void publishDriveFromController();
+  void checkTimeout();
+  void updateBuffers();
 
   // Low level safety stop control
   bool connected_;
@@ -71,6 +73,8 @@ private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
   void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
   void updateCommandCallback(const geometry_msgs::Twist& msg);
+  double* accelerate();
+  double* decelerate();
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
