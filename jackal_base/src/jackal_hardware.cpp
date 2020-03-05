@@ -113,9 +113,9 @@ void JackalHardware::publishDriveFromController()
       std::cout << left_vel << std::endl;
 
       // Calculate deceleration
-      double v_left = std::max(0.0, fabs(left_vel) - (.05/50.0));
+      double v_left = std::max(0.0, fabs(left_vel) - 0.1);
       std::cout << v_left << std::endl;
-      double v_right = std::max(0.0, fabs(right_vel) - (.05/50.0));
+      double v_right = std::max(0.0, fabs(right_vel) - 0.1);
       if (left_vel < 0.0)
       {
         v_left = -v_left;
@@ -126,7 +126,7 @@ void JackalHardware::publishDriveFromController()
       }
 
       // Create Drive message
-      double v = sin(time_now.toSec());
+      // double v = sin(time_now.toSec());
       std::cout << v_left << std::endl << std::endl;
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
