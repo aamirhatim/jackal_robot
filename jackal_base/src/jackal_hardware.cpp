@@ -133,13 +133,6 @@ void JackalHardware::publishDriveFromController()
         v_right = -v_right;
       }
 
-      // Create Drive message
-      // cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-      // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
-      // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
-      // cmd_drive_pub_.unlockAndPublish();
-      // std::cout << "timeout" << std::endl;
-
       lin_vel_left = v_left;
       lin_vel_right = v_right;
 
@@ -149,12 +142,14 @@ void JackalHardware::publishDriveFromController()
     {
       // Implement slow acceleration if user hasn't reached the commanded speed yet
       double cmd_expected = fabs(user_cmd.linear.x) * 10.0 - 0.3;
-      if (left_vel < cmd_expected)
+      if (left_vel < cmd_expected || right_vel < cmd_expected)
       {
         std::cout << "vel not reached" << std::endl;
+        std::cout << left_vel << std::endl << right_vel << std::endl;
+
         // Calculate acceleration
-        double v_left = std::min(2.0, fabs(left_vel) + 0.02);
-        double v_right = std::min(2.0, fabs(right_vel) + 0.02);
+        double v_left = std::min(2.0, fabs(left_vel) + 0.03);
+        double v_right = std::min(2.0, fabs(right_vel) + 0.03);
         if (left_vel < 0.0)
         {
           v_left = -v_left;
@@ -163,11 +158,6 @@ void JackalHardware::publishDriveFromController()
         {
           v_right = -v_right;
         }
-
-        // cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-        // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
-        // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
-        // cmd_drive_pub_.unlockAndPublish();
 
         lin_vel_left = v_left;
         lin_vel_right = v_right;
@@ -242,13 +232,17 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   left_buffer[2] = left_buffer[1];
   left_buffer[1] = left_buffer[0];
   left_buffer[0] = joints_[0].velocity;
-  left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
 
   // Update right velocity buffer
   right_buffer[2] = right_buffer[1];
   right_buffer[1] = right_buffer[0];
   right_buffer[0] = joints_[1].velocity;
-  right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
+
+  if (cmd_vel_reached_)
+  {
+    left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
+    right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
+  }
 
   // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 }
