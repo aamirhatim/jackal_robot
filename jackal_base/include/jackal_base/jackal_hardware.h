@@ -62,6 +62,7 @@ public:
   bool checkTimeout();
 
   bool connected_;
+  bool cmd_vel_reached_;
   ros::Time time_last_connected_;
   double left_vel;
   double left_buffer[3];
