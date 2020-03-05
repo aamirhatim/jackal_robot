@@ -108,8 +108,8 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       // Get current velocities
-      double left_vel = joints_[0].velocity / 10.0;
-      double right_vel = joints_[1].velocity / 10.0;
+      double left_vel = vels[0] / 10.0;
+      double right_vel = vels[1] / 10.0;
       // std::cout << left_vel << std::endl;
 
       // Calculate deceleration
@@ -194,6 +194,10 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
   // connected_ = true;
   time_last_connected_ = ros::Time::now();
+
+  // Get current vels
+  vels[0] = joints_[0].velocity;
+  vels[1] = joints_[1].velocity;
 }
 
 bool JackalHardware::checkTimeout()
