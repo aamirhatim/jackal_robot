@@ -62,7 +62,8 @@ public:
 
   bool connected_;
   ros::Time time_last_connected_;
-  double vels[2];
+  double vels;
+  double vel_buffer[3] = {0.0, 0.0, 0.0};
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);

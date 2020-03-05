@@ -62,7 +62,7 @@ JackalHardware::JackalHardware()
   // Heartbeat subscriber
   connected_ = false;
   time_last_connected_ = ros::Time::now();
-  heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this); 
+  heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -108,8 +108,8 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       // Get current velocities
-      double left_vel = vels[0] / 10.0;
-      double right_vel = vels[1] / 10.0;
+      double left_vel = vels / 10.0;
+      double right_vel = vels / 10.0;
       // std::cout << left_vel << std::endl;
 
       // Calculate deceleration
@@ -134,13 +134,16 @@ void JackalHardware::publishDriveFromController()
       cmd_drive_pub_.unlockAndPublish();
       // std::cout << "timeout" << std::endl;
       // std::cout << v_left * 10.0 << std::endl << std::endl;
+
+      vels = v_left;
+      std::cout << vels << std::endl;
     } else
     {
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
       cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
       cmd_drive_pub_.unlockAndPublish();
-      std::cout << "connected" << std::endl;
+      // std::cout << "connected" << std::endl;
     }    
   }
 }
@@ -195,11 +198,13 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   // connected_ = true;
   time_last_connected_ = ros::Time::now();
 
-  // Get current vels
-  vels[0] = joints_[0].velocity;
-  vels[1] = joints_[1].velocity;
-  std::cout << vels[0] << std::endl;
-  std::cout << vels[1] << std::endl << std::endl;
+  // Get current vels and add to buffer
+  vel_buffer[2] = vel_buffer[1];
+  vel_buffer[1] = vel_buffer[0];
+  vel_buffer[0] = joints_[0].velocity;
+
+  vels = (vel_buffer[0] + vel_buffer[1] + vel_buffer[2]) / 3.0;
+  std::cout << vels << std::endl;
 }
 
 bool JackalHardware::checkTimeout()
