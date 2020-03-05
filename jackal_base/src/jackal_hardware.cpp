@@ -196,7 +196,7 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   time_last_connected_ = ros::Time::now();
 
   // Update buffers
-  updateBuffers();
+  // updateBuffers();
   // // Update left velocity buffer
   // left_buffer[2] = left_buffer[1];
   // left_buffer[1] = left_buffer[0];
