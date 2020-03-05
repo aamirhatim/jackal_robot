@@ -124,14 +124,14 @@ void JackalHardware::publishSafeStop()
     // Calculate deceleration
     int sign_left = left_vel / fabs(left_vel);
     int sign_right = right_vel / fabs(right_vel);
-    double v_left = sign_left * (fabs(left_vel) - (1.5/50.0));
-    double v_right = sign_right * (fabs(right_vel) - (1.5/50.0));
+    double v_left = std::max(0.0, fabs(left_vel) - (1.5/50.0));
+    double v_right = std::max(0.0, fabs(right_vel) - (1.5/50.0));
     std::cout << v_right << std::endl;
 
     // Create Drive message
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = sign_left * v_left;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = sign_right * v_right;
 
     // Publish
     cmd_drive_pub_.unlockAndPublish();
