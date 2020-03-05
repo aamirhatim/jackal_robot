@@ -113,9 +113,9 @@ void JackalHardware::publishDriveFromController()
       std::cout << left_vel << std::endl;
 
       // Calculate deceleration
-      double v_left = std::max(0.0, fabs(left_vel) - (.15/50.0));
+      double v_left = std::max(0.0, fabs(left_vel) - (.05/50.0));
       std::cout << v_left << std::endl;
-      double v_right = std::max(0.0, fabs(right_vel) - (.15/50.0));
+      double v_right = std::max(0.0, fabs(right_vel) - (.05/50.0));
       if (left_vel < 0.0)
       {
         v_left = -v_left;
