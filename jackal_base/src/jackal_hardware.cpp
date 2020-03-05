@@ -60,7 +60,7 @@ JackalHardware::JackalHardware()
   feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
 
   // Heartbeat subscriber
-  heartbeat_sub_ = nh.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this); 
+  heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this); 
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -143,7 +143,7 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
 
 void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
-  std::cout << 'hi' << std::endl;
+  std::cout << "hi" << std::endl;
 }
 
 }  // namespace jackal_base

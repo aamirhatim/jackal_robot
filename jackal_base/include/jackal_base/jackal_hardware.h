@@ -65,7 +65,7 @@ private:
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
-  ros::Subscriber heartbeat_;
+  ros::Subscriber heartbeat_sub_;
   realtime_tools::RealtimePublisher<jackal_msgs::Drive> cmd_drive_pub_;
 
   hardware_interface::JointStateInterface joint_state_interface_;
