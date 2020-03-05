@@ -107,7 +107,7 @@ void JackalHardware::publishDriveFromController()
     // Check if elapsed time is greater than timeout
     if (time_elapsed > 0.5)
     {
-      std::cout << 'disconnect' << std::endl;
+      std::cout << "disconnect" << std::endl;
       std::cout << vels << std::endl;
       // Get current velocities
       double left_vel = vels / 10.0;
