@@ -144,12 +144,36 @@ void JackalHardware::publishDriveFromController()
 
       // Implement slow acceleration if user hasn't reached the commanded speed yet
       double cmd_expected = fabs(user_cmd.linear.x) * 10.0;
-      std::cout << cmd_expected << std::endl << left_vel << std::endl << std::endl;
+      if (left_vel < cmd_expected)
+      {
+        // Calculate acceleration
+        double v_left = std::min(2.0, fabs(left_vel) - 0.02);
+        double v_right = std::min(2.0, fabs(right_vel) - 0.02);
+        if (left_vel < 0.0)
+        {
+          v_left = -v_left;
+        }
+        if (right_vel < 0.0)
+        {
+          v_right = -v_right;
+        }
 
-      cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
-      cmd_drive_pub_.unlockAndPublish();
+        cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+        cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left;
+        cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right;
+        cmd_drive_pub_.unlockAndPublish();
+
+        left_vel = v_left;
+        right_vel = v_right;
+      } else
+      {
+        cmd_vel_reached_ = true;
+      }
+
+      // cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
+      // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
+      // cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
+      // cmd_drive_pub_.unlockAndPublish();
     } else
     {
       std::cout << "connected" << std::endl;
