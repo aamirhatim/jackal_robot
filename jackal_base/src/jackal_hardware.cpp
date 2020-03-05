@@ -118,12 +118,15 @@ void JackalHardware::publishSafeStop()
   if (cmd_drive_pub_.trylock())
   {
     // Get current velocities
-    double left_vel = joints_[0].velocity;
-    double right_vel = joints_[1].velocity;
+    double left_vel = joints_[0].velocity / 10.0;
+    double right_vel = joints_[1].velocity / 10.0;
 
     // Calculate deceleration
-    double v_left = 0.0;
-    double v_right = 0.0;
+    int sign_left = left_vel / fabs(left_vel);
+    int sign_right = right_vel / fabs(right_vel);
+    double v_left = sign_left * (fabs(left_vel) - (1.5/50.0));
+    double v_right = sign_right * (fabs(right_vel) - (1.5/50.0));
+    std::cout << v_right << std::endl;
 
     // Create Drive message
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
@@ -158,7 +161,7 @@ bool JackalHardware::checkTimeout()
 
   // Get elapsed time since last heartbeat
   double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-  std::cout << time_elapsed << std::endl;
+  // std::cout << time_elapsed << std::endl;
 
   // Check if elapsed time is greater than timeout
   if (time_elapsed > 0.5)
