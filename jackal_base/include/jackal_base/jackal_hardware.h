@@ -43,6 +43,7 @@
 #include "realtime_tools/realtime_publisher.h"
 #include "ros/ros.h"
 #include "sensor_msgs/JointState.h"
+#include "std_msgs/Empty.h"
 
 
 namespace jackal_base
@@ -60,6 +61,7 @@ public:
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
+  void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;

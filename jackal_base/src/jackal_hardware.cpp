@@ -57,7 +57,10 @@ JackalHardware::JackalHardware()
   registerInterface(&joint_state_interface_);
   registerInterface(&velocity_joint_interface_);
 
-  feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);  
+  feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
+
+  // Heartbeat subscriber
+  heartbeat_sub_ = nh.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this); 
 
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
@@ -98,9 +101,7 @@ void JackalHardware::publishDriveFromController()
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
     cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
     cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
-    cmd_drive_pub_.unlockAndPublish();
-
-    std::cout << ros::master::check() << std::endl;
+    cmd_drive_pub_.unlockAndPublish();    
   }
 }
 
@@ -138,6 +139,11 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
   // until the control thread is not using the lock.
   boost::mutex::scoped_lock lock(feedback_msg_mutex_);
   feedback_msg_ = msg;
+}
+
+void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
+{
+  std::cout << 'hi' << std::endl;
 }
 
 }  // namespace jackal_base
