@@ -108,6 +108,7 @@ void JackalHardware::publishDriveFromController()
     if (time_elapsed > 0.5)
     {
       std::cout << "disconnect" << std::endl;
+      std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
       // Get current velocities
       // double left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
       // double right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
@@ -130,14 +131,14 @@ void JackalHardware::publishDriveFromController()
       // double v = sin(time_now.toSec());
       // std::cout << v_left << std::endl << std::endl;
       cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left * 10;
-      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right * 10;
-      cmd_drive_pub_.unlockAndPublish();
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = v_left / 10.0;
+      cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = v_right / 10.0;
+      // cmd_drive_pub_.unlockAndPublish();
       // std::cout << "timeout" << std::endl;
       // std::cout << v_left * 10.0 << std::endl << std::endl;
 
-      left_vel = v_left;
-      right_vel = v_right;
+      // left_vel = v_left;
+      // right_vel = v_right;
       // std::cout << vels << std::endl;
     } else
     {
@@ -210,6 +211,8 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   right_buffer[1] = right_buffer[0];
   right_buffer[0] = joints_[1].velocity;
   right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
+
+  std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 }
 
 bool JackalHardware::checkTimeout()
