@@ -98,13 +98,6 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    // Get current time
-    // ros::Time time_now = ros::Time::now();
-
-    // Get elapsed time since last heartbeat
-    // double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
-    // std::cout << time_elapsed << std::endl;
-
     // Set initial velocity values
     double lin_vel_left = joints_[0].velocity_command;
     double lin_vel_right = joints_[1].velocity_command;
@@ -112,27 +105,12 @@ void JackalHardware::publishDriveFromController()
     // Check if elapsed time is greater than timeout
     if (!connected_)
     {
-      // if (connected_)
-      // {
-      //   connected_ = false;
-      //   cmd_vel_reached_ = false;
-      // }
       // std::cout << "disconnect" << std::endl;
       // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 
       // Calculate deceleration
       double *vels;
       vels = decelerate();
-      // double v_left = std::max(0.0, fabs(left_vel) - 0.02);
-      // double v_right = std::max(0.0, fabs(right_vel) - 0.02);
-      // if (left_vel < 0.0)
-      // {
-      //   v_left = -v_left;
-      // }
-      // if (right_vel < 0.0)
-      // {
-      //   v_right = -v_right;
-      // }
 
       lin_vel_left = vels[0];
       lin_vel_right = vels[1];
@@ -151,16 +129,6 @@ void JackalHardware::publishDriveFromController()
         // Calculate acceleration
         double *vels;
         vels = accelerate();
-        // double v_left = std::min(20.0, fabs(left_vel) + 0.03);
-        // double v_right = std::min(20.0, fabs(right_vel) + 0.03);
-        // if (left_vel < 0.0)
-        // {
-        //   v_left = -v_left;
-        // }
-        // if (right_vel < 0.0)
-        // {
-        //   v_right = -v_right;
-        // }
 
         lin_vel_left = vels[0];
         lin_vel_right = vels[1];
@@ -192,40 +160,11 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
 
 void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
-  // connected_ = true;
   time_last_connected_ = ros::Time::now();
-
-  // Update buffers
-  // updateBuffers();
-  // // Update left velocity buffer
-  // left_buffer[2] = left_buffer[1];
-  // left_buffer[1] = left_buffer[0];
-  // left_buffer[0] = joints_[0].velocity;
-
-  // // Update right velocity buffer
-  // right_buffer[2] = right_buffer[1];
-  // right_buffer[1] = right_buffer[0];
-  // right_buffer[0] = joints_[1].velocity;
-
-  // if (cmd_vel_reached_)
-  // {
-  //   left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
-  //   right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
-  // }
 }
 
 void JackalHardware::updateCommandCallback(const geometry_msgs::Twist& msg)
 {
-  // if (!cmd_vel_reached_ && connected_)
-  // {
-  //   if (fabs(msg.linear.x) < fabs(user_cmd.linear.x))
-  //   {
-  //     user_cmd = msg;
-  //   }
-  // } else
-  // {
-  //   user_cmd = msg;
-  // }
   user_cmd = msg;
 }
 
@@ -295,19 +234,19 @@ double* JackalHardware::decelerate()
 void JackalHardware::updateBuffers()
 {
   // Update left velocity buffer
-  left_buffer[2] = left_buffer[1];
+  // left_buffer[2] = left_buffer[1];
   left_buffer[1] = left_buffer[0];
   left_buffer[0] = joints_[0].velocity;
 
   // Update right velocity buffer
-  right_buffer[2] = right_buffer[1];
+  // right_buffer[2] = right_buffer[1];
   right_buffer[1] = right_buffer[0];
   right_buffer[0] = joints_[1].velocity;
 
   if (cmd_vel_reached_)
   {
-    left_vel = (left_buffer[0] + left_buffer[1] + left_buffer[2]) / 3.0;
-    right_vel = (right_buffer[0] + right_buffer[1] + right_buffer[2]) / 3.0;
+    left_vel = (left_buffer[0] + left_buffer[1]) / 2.0;
+    right_vel = (right_buffer[0] + right_buffer[1]) / 2.0;
   }
 }
 
