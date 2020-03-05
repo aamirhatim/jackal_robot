@@ -100,7 +100,9 @@ void JackalHardware::publishDriveFromController()
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
     cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = joints_[0].velocity_command;
     cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = joints_[1].velocity_command;
-    cmd_drive_pub_.unlockAndPublish();    
+    cmd_drive_pub_.unlockAndPublish();
+
+    std::cout << joints_[0].velocity << std::endl;
   }
 }
 
