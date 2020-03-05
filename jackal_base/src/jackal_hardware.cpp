@@ -198,7 +198,8 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
   // Get current vels
   vels[0] = joints_[0].velocity;
   vels[1] = joints_[1].velocity;
-  std::cout << vels << std::endl;
+  std::cout << vels[0] << std::endl;
+  std::cout << vels[1] << std::endl << std::endl;
 }
 
 bool JackalHardware::checkTimeout()
