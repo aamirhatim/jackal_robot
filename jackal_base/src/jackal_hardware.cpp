@@ -111,7 +111,7 @@ void JackalHardware::publishDriveFromController()
     double lin_vel_right = joints_[1].velocity_command;
 
     // Check if elapsed time is greater than timeout
-    if (time_elapsed > 0.5)
+    if (time_elapsed > 0.2)
     {
       if (connected_)
       {
@@ -145,7 +145,7 @@ void JackalHardware::publishDriveFromController()
       if (left_vel < cmd_expected || right_vel < cmd_expected)
       {
         std::cout << "vel not reached" << std::endl;
-        std::cout << left_vel << std::endl << right_vel << std::endl;
+        std::cout << cmd_expected << std::endl << right_vel << std::endl;
 
         // Calculate acceleration
         double v_left = std::min(2.0, fabs(left_vel) + 0.03);
@@ -167,6 +167,7 @@ void JackalHardware::publishDriveFromController()
       } else
       {
         cmd_vel_reached_ = true;
+        std::cout << "vel reached" << std::endl;
       }
     }
 
