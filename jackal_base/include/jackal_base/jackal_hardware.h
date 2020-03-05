@@ -58,6 +58,10 @@ public:
 
   // Low level safety stop control
   void publishSafeStop();
+  bool checkTimeout();
+
+  bool connected_;
+  ros::Time time_last_connected_;
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);

@@ -60,6 +60,8 @@ JackalHardware::JackalHardware()
   feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
 
   // Heartbeat subscriber
+  connected_ = false;
+  time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this); 
 
   // Realtime publisher, initializes differently from regular ros::Publisher
@@ -143,7 +145,28 @@ void JackalHardware::feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg
 
 void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 {
-  std::cout << "hi" << std::endl;
+  connected_ = true;
+  time_last_connected_ = ros::Time::now();
+}
+
+bool JackalHardware::checkTimeout()
+{
+  bool timeout = false;
+
+  // Get current time
+  ros::Time time_now = ros::Time::now();
+
+  // Get elapsed time since last heartbeat
+  double time_elapsed = time_now.toSec() - time_last_connected_.toSec();
+  std::cout << time_elapsed << std::endl;
+
+  // Check if elapsed time is greater than timeout
+  if (time_elapsed > 0.5)
+  {
+    timeout = true;
+  }
+
+  return timeout;
 }
 
 }  // namespace jackal_base
