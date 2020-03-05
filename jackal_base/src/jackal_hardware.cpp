@@ -117,7 +117,7 @@ void JackalHardware::publishDriveFromController()
         connected_ = false;
         cmd_vel_reached_ = false;
       }
-      std::cout << "disconnect" << std::endl;
+      // std::cout << "disconnect" << std::endl;
       // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 
       // Calculate deceleration
@@ -143,8 +143,8 @@ void JackalHardware::publishDriveFromController()
       double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
       if (fabs(left_vel) < cmd_expected || fabs(right_vel) < cmd_expected)
       {
-        std::cout << "vel not reached" << std::endl;
-        std::cout << cmd_expected << std::endl << right_vel << std::endl;
+        // std::cout << "vel not reached" << std::endl;
+        // std::cout << cmd_expected << std::endl << right_vel << std::endl;
 
         // Calculate acceleration
         double v_left = std::min(20.0, fabs(left_vel) + 0.03);
@@ -166,7 +166,7 @@ void JackalHardware::publishDriveFromController()
       } else
       {
         cmd_vel_reached_ = true;
-        std::cout << "vel reached" << std::endl;
+        // std::cout << "vel reached" << std::endl;
       }
     }
 
