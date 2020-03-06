@@ -247,9 +247,12 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
   // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
   double delta_left = cmd_desired - left_vel;
   double delta_right = cmd_desired - right_vel;
-  if (connected_ && !cmd_vel_reached_ && fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
+  if (!cmd_vel_reached_)
   {
-    cmd_vel_reached_ = true;
+    if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
+    {
+      cmd_vel_reached_ = true;
+    }
   }
       
   // Calculate acceleration needed to get current actual speed to current desired speed
