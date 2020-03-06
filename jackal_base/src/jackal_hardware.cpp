@@ -102,10 +102,10 @@ void JackalHardware::publishDriveFromController()
     double lin_vel_left;
     double lin_vel_right;
 
-    // if (cmd_vel_reached_)
+    // if (cmd_vel_reached_ && connected_)
     // {
-    left_vel = joints_[0].velocity;
-    right_vel = joints_[1].velocity;
+    //   left_vel = joints_[0].velocity;
+    //   right_vel = joints_[1].velocity;
     // }
 
     // Check if elapsed time is greater than timeout
@@ -150,6 +150,8 @@ void JackalHardware::publishDriveFromController()
     {
       lin_vel_left = joints_[0].velocity_command;
       lin_vel_right = joints_[1].velocity_command;
+      left_vel = joints_[0].velocity;
+      right_vel = joints_[1].velocity;
     }
 
     // Publish drive command
