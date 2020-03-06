@@ -128,6 +128,15 @@ void JackalHardware::publishDriveFromController()
       // Get current desired speed
       double cmd_desired = user_cmd.linear.x * 10;
 
+      // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
+      double delta_left = fabs(cmd_desired - left_vel);
+      double delta_right = fabs(cmd_desired - right_vel);
+      if (delta_left <= 0.5 && delta_right <= 0.5)
+      {
+        cmd_vel_reached_ = true;
+        break;
+      }
+
       // Get current actual speed
       // double v_current_left = joints_[0].velocity;
       // double v_current_right = joints_[1].velocity;
@@ -150,15 +159,7 @@ void JackalHardware::publishDriveFromController()
       left_vel += acc_left;
       right_vel += acc_right;
 
-      std::cout << cmd_expected << std::endl << right_vel << std::endl << std::endl;
-
-      // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-      double delta_left = fabs(cmd_desired - left_vel);
-      double delta_right = fabs(cmd_desired - right_vel);
-      if (delta_left <= 0.5 && delta_right <= 0.5)
-      {
-        cmd_vel_reached_ = true;
-      }
+      std::cout << cmd_desired << std::endl << right_vel << std::endl << std::endl;
 
       // // Implement slow acceleration if user hasn't reached the commanded speed yet
       // double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
