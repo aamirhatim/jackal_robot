@@ -115,15 +115,22 @@ void JackalHardware::publishDriveFromController()
       // std::cout << "disconnect" << std::endl;
       // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
 
-      // Calculate deceleration
-      double *vels;
-      vels = decelerate();
+      // // Calculate deceleration
+      // double *vels;
+      // vels = decelerate();
 
-      // lin_vel_left = vels[0];
-      // lin_vel_right = vels[1];
+      // // lin_vel_left = vels[0];
+      // // lin_vel_right = vels[1];
 
-      left_vel = vels[0];
-      right_vel = vels[1];
+      // left_vel = vels[0];
+      // right_vel = vels[1];
+
+      double *acc;
+      acc = getAcceleration(0.0);
+
+      // Set left and right speeds
+      left_vel += acc[0];
+      right_vel += acc[1];
     } else if (!cmd_vel_reached_)
     {
       // // Get current desired speed
@@ -151,7 +158,7 @@ void JackalHardware::publishDriveFromController()
       //   acc_right = (fabs(acc_right) / acc_right) * 0.06;
       // }
 
-      // const double cmd = user_cmd.linear.x * 10;
+      const double cmd = user_cmd.linear.x * 10;
       double *acc;
       acc = getAcceleration(cmd);
 
