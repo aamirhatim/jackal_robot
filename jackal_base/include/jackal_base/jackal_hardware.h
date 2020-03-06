@@ -56,32 +56,15 @@ public:
   JackalHardware();
   void copyJointsFromHardware();
   void publishDriveFromController();
-  void checkTimeout();
-  void updateBuffers();
 
-  // Low level safety stop control
-  bool connected_;
-  bool cmd_vel_reached_;
-  ros::Time time_last_connected_;
-  double left_vel;
-  double left_buffer;
-  double right_vel;
-  double right_buffer;
-  geometry_msgs::Twist user_cmd;
-  // double user_cmd_lim;
+  // Custom config
+  void checkTimeout();
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
-  void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
-  void updateCommandCallback(const geometry_msgs::Twist& msg);
-  double* accelerate();
-  double* decelerate();
-  double* getAcceleration(const double cmd_desired);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;
-  ros::Subscriber heartbeat_sub_;
-  ros::Subscriber user_cmd_sub_;
   realtime_tools::RealtimePublisher<jackal_msgs::Drive> cmd_drive_pub_;
 
   hardware_interface::JointStateInterface joint_state_interface_;
@@ -104,6 +87,21 @@ private:
   // This pointer is set from the ROS thread.
   jackal_msgs::Feedback::ConstPtr feedback_msg_;
   boost::mutex feedback_msg_mutex_;
+
+  // Custom config
+  bool connected_;
+  bool cmd_vel_reached_;
+  double left_vel_;
+  double right_vel_;
+  double acc_rate_;
+  ros::Time time_last_connected_;
+  geometry_msgs::Twist user_cmd_;
+  ros::Subscriber heartbeat_sub_;
+  ros::Subscriber user_cmd_sub_;
+
+  void heartbeatCallback(const std_msgs::Empty::ConstPtr& msg);
+  void updateCommandCallback(const geometry_msgs::Twist& msg);
+  double* getAcceleration(const double cmd_desired);
 };
 
 }  // namespace jackal_base

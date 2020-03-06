@@ -58,16 +58,17 @@ JackalHardware::JackalHardware()
 
   feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
 
-  // Heartbeat subscriber
-  connected_ = true;
-  cmd_vel_reached_ = true;
-  // user_cmd_lim = 0.0;
-  time_last_connected_ = ros::Time::now();
-  heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
-  user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommandCallback, this);
-
   // Realtime publisher, initializes differently from regular ros::Publisher
   cmd_drive_pub_.init(nh_, "cmd_drive", 1);
+
+  // Custom config
+  acc_rate_ = 0.08;
+  connected_ = true;
+  cmd_vel_reached_ = true;
+  time_last_connected_ = ros::Time::now();
+
+  heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
+  user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommandCallback, this);
 }
 
 /**
@@ -99,106 +100,34 @@ void JackalHardware::publishDriveFromController()
 {
   if (cmd_drive_pub_.trylock())
   {
-    // Set initial velocity values
-    // double lin_vel_left;
-    // double lin_vel_right;
-
-    // if (cmd_vel_reached_ && connected_)
-    // {
-    //   left_vel = joints_[0].velocity;
-    //   right_vel = joints_[1].velocity;
-    // }
-
     // Check if elapsed time is greater than timeout
     if (!connected_)
     {
-      // std::cout << "disconnect" << std::endl;
-      // std::cout << left_vel << std::endl << right_vel << std::endl << std::endl;
-
-      // // Calculate deceleration
-      // double *vels;
-      // vels = decelerate();
-
-      // // lin_vel_left = vels[0];
-      // // lin_vel_right = vels[1];
-
-      // left_vel = vels[0];
-      // right_vel = vels[1];
-
       double *acc;
       acc = getAcceleration(0.0);
 
       // Set left and right speeds
-      left_vel += acc[0];
-      right_vel += acc[1];
+      left_vel_ += acc[0];
+      right_vel_ += acc[1];
     } else if (!cmd_vel_reached_)
     {
-      // // Get current desired speed
-      // double cmd_desired = user_cmd.linear.x * 10;
-
-      // // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-      // double delta_left = cmd_desired - left_vel;
-      // double delta_right = cmd_desired - right_vel;
-      // if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
-      // {
-      //   cmd_vel_reached_ = true;
-      // }
-
-      // // Calculate acceleration needed to get current actual speed to current desired speed
-      // double acc_left = delta_left / 50.0;
-      // double acc_right = delta_right / 50.0;
-
-      // // Saturate acceleration if needed and add that to current speed
-      // if (fabs(acc_left) > 0.06)
-      // {
-      //   acc_left = (fabs(acc_left) / acc_left) * 0.06;
-      // }
-      // if (fabs(acc_right) > 0.06)
-      // {
-      //   acc_right = (fabs(acc_right) / acc_right) * 0.06;
-      // }
-
-      const double cmd = user_cmd.linear.x * 10;
+      const double cmd = user_cmd_.linear.x * 10;
       double *acc;
       acc = getAcceleration(cmd);
 
       // Set left and right speeds
-      left_vel += acc[0];
-      right_vel += acc[1];
-
-      // std::cout << cmd_desired << std::endl << right_vel << std::endl << std::endl;
-
-      // // Implement slow acceleration if user hasn't reached the commanded speed yet
-      // double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
-      // std::cout << cmd_expected << std::endl << right_vel << std::endl << std::endl;
-      // if (fabs(left_vel) < cmd_expected || fabs(right_vel) < cmd_expected)
-      // {
-      //   // Calculate acceleration
-      //   double *vels;
-      //   vels = accelerate();
-
-      //   // lin_vel_left = vels[0];
-      //   // lin_vel_right = vels[1];
-
-      //   left_vel = vels[0];
-      //   right_vel = vels[1];
-      // } else
-      // {
-      //   cmd_vel_reached_ = true;
-      //   // std::cout << "vel reached" << std::endl;
-      // }
+      left_vel_ += acc[0];
+      right_vel_ += acc[1];
     } else
     {
-      // lin_vel_left = joints_[0].velocity_command;
-      // lin_vel_right = joints_[1].velocity_command;
-      left_vel = joints_[0].velocity_command;
-      right_vel = joints_[1].velocity_command;
+      left_vel_ = joints_[0].velocity_command;
+      right_vel_ = joints_[1].velocity_command;
     }
 
     // Publish drive command
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = left_vel;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = right_vel;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = left_vel_;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = right_vel_;
     cmd_drive_pub_.unlockAndPublish(); 
   }
 }
@@ -218,7 +147,7 @@ void JackalHardware::heartbeatCallback(const std_msgs::Empty::ConstPtr& msg)
 
 void JackalHardware::updateCommandCallback(const geometry_msgs::Twist& msg)
 {
-  user_cmd = msg;
+  user_cmd_ = msg;
 }
 
 void JackalHardware::checkTimeout()
@@ -247,21 +176,21 @@ void JackalHardware::checkTimeout()
 double* JackalHardware::getAcceleration(const double cmd_desired)
 {
   // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-  double delta_left = cmd_desired - left_vel;
-  double delta_right = cmd_desired - right_vel;
+  double delta_left = cmd_desired - left_vel_;
+  double delta_right = cmd_desired - right_vel_;
       
   // Calculate acceleration needed to get current actual speed to current desired speed
   double acc_left = delta_left / 50.0;
   double acc_right = delta_right / 50.0;
 
   // Saturate acceleration if needed and add that to current speed
-  if (fabs(acc_left) > 0.05)
+  if (fabs(acc_left) > acc_rate_)
   {
-    acc_left = (fabs(acc_left) / acc_left) * 0.05;
+    acc_left = (fabs(acc_left) / acc_left) * acc_rate_;
   }
-  if (fabs(acc_right) > 0.05)
+  if (fabs(acc_right) > acc_rate_)
   {
-    acc_right = (fabs(acc_right) / acc_right) * 0.05;
+    acc_right = (fabs(acc_right) / acc_right) * acc_rate_;
   }
 
   static double acc[2];
@@ -277,65 +206,6 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
     }
   }
   return acc;
-}
-
-double* JackalHardware::accelerate()
-{
-  double v_left = std::min(20.0, fabs(left_vel) + 0.03);
-  double v_right = std::min(20.0, fabs(right_vel) + 0.03);
-  if (left_vel < 0.0)
-  {
-    v_left = -v_left;
-  }
-  if (right_vel < 0.0)
-  {
-    v_right = -v_right;
-  }
-
-  static double vels[2];
-  vels[0] = v_left;
-  vels[1] = v_right;
-
-  return vels;
-}
-
-double* JackalHardware::decelerate()
-{
-  double v_left = std::max(0.0, fabs(left_vel) - 0.03);
-  double v_right = std::max(0.0, fabs(right_vel) - 0.03);
-  if (left_vel < 0.0)
-  {
-    v_left = -v_left;
-  }
-  if (right_vel < 0.0)
-  {
-    v_right = -v_right;
-  }
-
-  static double vels[2];
-  vels[0] = v_left;
-  vels[1] = v_right;
-
-  return vels;
-}
-
-void JackalHardware::updateBuffers()
-{
-  // // Update left velocity buffer
-  // // left_buffer[2] = left_buffer[1];
-  // left_buffer[1] = left_buffer[0];
-  // left_buffer[0] = joints_[0].velocity;
-
-  // // Update right velocity buffer
-  // // right_buffer[2] = right_buffer[1];
-  // right_buffer[1] = right_buffer[0];
-  // right_buffer[0] = joints_[1].velocity;
-
-  if (cmd_vel_reached_)
-  {
-    left_vel = joints_[0].velocity;
-    right_vel = joints_[1].velocity;
-  }
 }
 
 }  // namespace jackal_base
