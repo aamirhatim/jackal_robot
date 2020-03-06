@@ -136,29 +136,29 @@ void JackalHardware::publishDriveFromController()
       // double cmd_desired = user_cmd_lim * 10.0;
 
       // Get current actual speed
-      double v_current_left = joints_[0].velocity;
-      double v_current_right = joints_[1].velocity;
+      // double v_current_left = joints_[0].velocity;
+      // double v_current_right = joints_[1].velocity;
 
       // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-      double delta_left = fabs(cmd_desired - v_current_left);
-      double delta_right = fabs(cmd_desired - v_current_right);
-      if (delta_left <= 0.5 && delta_right <= 0.5)
+      double delta_left = cmd_desired - left_vel;
+      double delta_right = cmd_desired - right_vel;
+      if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
       {
         cmd_vel_reached_ = true;
       }
 
       // Calculate acceleration needed to get current actual speed to current desired speed
-      double acc_left = (cmd_desired - v_current_left) / 50.0;
-      double acc_right = (cmd_desired - v_current_right) / 50.0;
+      double acc_left = delta_left / 50.0;
+      double acc_right = delta_right / 50.0;
 
       // Saturate acceleration if needed and add that to current speed
-      if (fabs(acc_left) > 0.03)
+      if (fabs(acc_left) > 0.06)
       {
-        acc_left = (fabs(acc_left) / acc_left) * 0.03;
+        acc_left = (fabs(acc_left) / acc_left) * 0.06;
       }
-      if (fabs(acc_right) > 0.03)
+      if (fabs(acc_right) > 0.06)
       {
-        acc_right = (fabs(acc_right) / acc_right) * 0.03;
+        acc_right = (fabs(acc_right) / acc_right) * 0.06;
       }
 
       // Set left and right speeds
@@ -266,8 +266,8 @@ double* JackalHardware::accelerate()
 
 double* JackalHardware::decelerate()
 {
-  double v_left = std::max(0.0, fabs(left_vel) - 0.02);
-  double v_right = std::max(0.0, fabs(right_vel) - 0.02);
+  double v_left = std::max(0.0, fabs(left_vel) - 0.03);
+  double v_right = std::max(0.0, fabs(right_vel) - 0.03);
   if (left_vel < 0.0)
   {
     v_left = -v_left;
