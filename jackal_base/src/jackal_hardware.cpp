@@ -151,7 +151,7 @@ void JackalHardware::publishDriveFromController()
       //   acc_right = (fabs(acc_right) / acc_right) * 0.06;
       // }
 
-      const double cmd = user_cmd.linear.x * 10;
+      // const double cmd = user_cmd.linear.x * 10;
       double *acc;
       acc = getAcceleration(cmd);
 
@@ -230,7 +230,6 @@ void JackalHardware::checkTimeout()
     {
       connected_ = false;
       cmd_vel_reached_ = false;
-      // user_cmd_lim = user_cmd.linear.x;
     }
   } else
   {
@@ -268,7 +267,6 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
   static double acc[2];
   acc[0] = acc_left;
   acc[1] = acc_right;
-  // std::cout << acc_left << std::endl << acc_right << std::endl << std::endl;
   return acc;
 }
 
