@@ -59,8 +59,8 @@ JackalHardware::JackalHardware()
   feedback_sub_ = nh_.subscribe("feedback", 1, &JackalHardware::feedbackCallback, this);
 
   // Heartbeat subscriber
-  connected_ = false;
-  cmd_vel_reached_ = false;
+  connected_ = true;
+  cmd_vel_reached_ = true;
   // user_cmd_lim = 0.0;
   time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
@@ -249,13 +249,6 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
   // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
   double delta_left = cmd_desired - left_vel;
   double delta_right = cmd_desired - right_vel;
-  if (!cmd_vel_reached_ && connected_)
-  {
-    if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
-    {
-      cmd_vel_reached_ = true;
-    }
-  }
       
   // Calculate acceleration needed to get current actual speed to current desired speed
   double acc_left = delta_left / 50.0;
@@ -274,6 +267,15 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
   static double acc[2];
   acc[0] = acc_left;
   acc[1] = acc_right;
+
+  // If reconnecting, check if desired cmd_vel has been reached
+  if (!cmd_vel_reached_ && connected_)
+  {
+    if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
+    {
+      cmd_vel_reached_ = true;
+    }
+  }
   return acc;
 }
 
