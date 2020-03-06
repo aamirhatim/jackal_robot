@@ -76,6 +76,7 @@ private:
   void updateCommandCallback(const geometry_msgs::Twist& msg);
   double* accelerate();
   double* decelerate();
+  double* getAcceleration(const double cmd_desired);
 
   ros::NodeHandle nh_;
   ros::Subscriber feedback_sub_;

@@ -126,44 +126,42 @@ void JackalHardware::publishDriveFromController()
       right_vel = vels[1];
     } else if (!cmd_vel_reached_)
     {
-      // Get current desired speed
-      double cmd_desired = user_cmd.linear.x * 10;
-      // std::cout << user_cmd.linear.x << std::endl << user_cmd_lim << std::endl << std::endl;
-      // if (fabs(user_cmd.linear.x) < fabs(user_cmd_lim))
+      // // Get current desired speed
+      // double cmd_desired = user_cmd.linear.x * 10;
+
+      // // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
+      // double delta_left = cmd_desired - left_vel;
+      // double delta_right = cmd_desired - right_vel;
+      // if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
       // {
-      //   user_cmd_lim = user_cmd.linear.x;
+      //   cmd_vel_reached_ = true;
       // }
-      // double cmd_desired = user_cmd_lim * 10.0;
 
-      // Get current actual speed
-      // double v_current_left = joints_[0].velocity;
-      // double v_current_right = joints_[1].velocity;
+      // // Calculate acceleration needed to get current actual speed to current desired speed
+      // double acc_left = delta_left / 50.0;
+      // double acc_right = delta_right / 50.0;
 
-      // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-      double delta_left = cmd_desired - left_vel;
-      double delta_right = cmd_desired - right_vel;
-      if (fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
+      // // Saturate acceleration if needed and add that to current speed
+      // if (fabs(acc_left) > 0.06)
+      // {
+      //   acc_left = (fabs(acc_left) / acc_left) * 0.06;
+      // }
+      // if (fabs(acc_right) > 0.06)
+      // {
+      //   acc_right = (fabs(acc_right) / acc_right) * 0.06;
+      // }
+
+      double *acc;
+      acc = getAcceleration(user_cmd.linear.x * 10);
+
+      if (fabs(acc[0]) <= 0.01 && fabs(acc[1]) <= 0.01)
       {
         cmd_vel_reached_ = true;
       }
 
-      // Calculate acceleration needed to get current actual speed to current desired speed
-      double acc_left = delta_left / 50.0;
-      double acc_right = delta_right / 50.0;
-
-      // Saturate acceleration if needed and add that to current speed
-      if (fabs(acc_left) > 0.06)
-      {
-        acc_left = (fabs(acc_left) / acc_left) * 0.06;
-      }
-      if (fabs(acc_right) > 0.06)
-      {
-        acc_right = (fabs(acc_right) / acc_right) * 0.06;
-      }
-
       // Set left and right speeds
-      left_vel += acc_left;
-      right_vel += acc_right;
+      left_vel += acc[0];
+      right_vel += acc[1];
 
       // std::cout << cmd_desired << std::endl << right_vel << std::endl << std::endl;
 
@@ -242,6 +240,26 @@ void JackalHardware::checkTimeout()
   {
     connected_ = true;
   }
+}
+
+double* JackalHardware::getAcceleration(const double cmd_desired)
+{
+  // Calculate acceleration needed to get current actual speed to current desired speed
+  double acc_left = (cmd_desired - left_vel) / 50.0;
+  double acc_right = (cmd_desired - right_vel) / 50.0;
+
+  // Saturate acceleration if needed and add that to current speed
+  if (fabs(acc_left) > 0.05)
+  {
+    acc_left = (fabs(acc_left) / acc_left) * 0.05;
+  }
+  if (fabs(acc_right) > 0.05)
+  {
+    acc_right = (fabs(acc_right) / acc_right) * 0.05;
+  }
+
+  static double acc[2] = {acc_left, acc_right};
+  return acc;
 }
 
 double* JackalHardware::accelerate()
