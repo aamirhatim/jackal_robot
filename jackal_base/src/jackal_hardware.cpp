@@ -102,6 +102,12 @@ void JackalHardware::publishDriveFromController()
     double lin_vel_left;
     double lin_vel_right;
 
+    if (cmd_vel_reached_)
+    {
+      left_vel = joints_[0].velocity;
+      right_vel = joints_[1].velocity;
+    }
+
     // Check if elapsed time is greater than timeout
     if (!connected_)
     {
