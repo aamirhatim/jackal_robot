@@ -155,11 +155,6 @@ void JackalHardware::publishDriveFromController()
       double *acc;
       acc = getAcceleration(cmd);
 
-      // if (fabs(acc[0]) <= 0.01 && fabs(acc[1]) <= 0.01)
-      // {
-      //   cmd_vel_reached_ = true;
-      // }
-
       // Set left and right speeds
       left_vel += acc[0];
       right_vel += acc[1];
@@ -271,6 +266,7 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
   }
 
   static double acc[2] = {acc_left, acc_right};
+  std::cout << acc[0] << std::endl << acc[1] << std::endl << std::endl;
   return acc;
 }
 
