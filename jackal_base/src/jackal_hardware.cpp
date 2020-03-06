@@ -154,10 +154,10 @@ void JackalHardware::publishDriveFromController()
       double *acc;
       acc = getAcceleration(user_cmd.linear.x * 10);
 
-      if (fabs(acc[0]) <= 0.01 && fabs(acc[1]) <= 0.01)
-      {
-        cmd_vel_reached_ = true;
-      }
+      // if (fabs(acc[0]) <= 0.01 && fabs(acc[1]) <= 0.01)
+      // {
+      //   cmd_vel_reached_ = true;
+      // }
 
       // Set left and right speeds
       left_vel += acc[0];
@@ -244,9 +244,17 @@ void JackalHardware::checkTimeout()
 
 double* JackalHardware::getAcceleration(const double cmd_desired)
 {
+  // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
+  double delta_left = cmd_desired - left_vel;
+  double delta_right = cmd_desired - right_vel;
+  if (connected_ && !cmd_vel_reached_ && fabs(delta_left) <= 0.5 && fabs(delta_right) <= 0.5)
+  {
+    cmd_vel_reached_ = true;
+  }
+      
   // Calculate acceleration needed to get current actual speed to current desired speed
-  double acc_left = (cmd_desired - left_vel) / 50.0;
-  double acc_right = (cmd_desired - right_vel) / 50.0;
+  double acc_left = delta_left / 50.0;
+  double acc_right = delta_right / 50.0;
 
   // Saturate acceleration if needed and add that to current speed
   if (fabs(acc_left) > 0.05)
