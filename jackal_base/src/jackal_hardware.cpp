@@ -61,6 +61,7 @@ JackalHardware::JackalHardware()
   // Heartbeat subscriber
   connected_ = false;
   cmd_vel_reached_ = false;
+  user_cmd_lim = 0.0;
   time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
   user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommandCallback, this);
@@ -126,7 +127,12 @@ void JackalHardware::publishDriveFromController()
     } else if (!cmd_vel_reached_)
     {
       // Get current desired speed
-      double cmd_desired = user_cmd.linear.x * 10;
+      // double cmd_desired = user_cmd.linear.x * 10;
+      if (fabs(user_cmd.linear.x) < fabs(user_cmd_lim))
+      {
+        user_cmd_lim = user_cmd.linear.x;
+      }
+      double cmd_desired = user_cmd_lim * 10.0;
 
       // Get current actual speed
       double v_current_left = joints_[0].velocity;
@@ -230,6 +236,7 @@ void JackalHardware::checkTimeout()
     {
       connected_ = false;
       cmd_vel_reached_ = false;
+      user_cmd_lim = user_cmd.linear.x;
     }
   } else
   {

@@ -68,6 +68,7 @@ public:
   double right_vel;
   double right_buffer;
   geometry_msgs::Twist user_cmd;
+  double user_cmd_lim;
 
 private:
   void feedbackCallback(const jackal_msgs::Feedback::ConstPtr& msg);
