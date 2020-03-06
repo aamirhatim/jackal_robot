@@ -265,8 +265,10 @@ double* JackalHardware::getAcceleration(const double cmd_desired)
     acc_right = (fabs(acc_right) / acc_right) * 0.05;
   }
 
-  static double acc[2] = {acc_left, acc_right};
-  std::cout << acc_left << std::endl << acc_right << std::endl << std::endl;
+  static double acc[2];
+  acc[0] = acc_left;
+  acc[1] = acc_right;
+  // std::cout << acc_left << std::endl << acc_right << std::endl << std::endl;
   return acc;
 }
 
