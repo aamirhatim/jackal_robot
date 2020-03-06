@@ -99,8 +99,8 @@ void JackalHardware::publishDriveFromController()
   if (cmd_drive_pub_.trylock())
   {
     // Set initial velocity values
-    double lin_vel_left;
-    double lin_vel_right;
+    // double lin_vel_left;
+    // double lin_vel_right;
 
     // if (cmd_vel_reached_ && connected_)
     // {
@@ -118,15 +118,15 @@ void JackalHardware::publishDriveFromController()
       double *vels;
       vels = decelerate();
 
-      lin_vel_left = vels[0];
-      lin_vel_right = vels[1];
+      // lin_vel_left = vels[0];
+      // lin_vel_right = vels[1];
 
       left_vel = vels[0];
       right_vel = vels[1];
     } else if (!cmd_vel_reached_)
     {
       // Implement slow acceleration if user hasn't reached the commanded speed yet
-      double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 5.0);
+      double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
       if (fabs(left_vel) < cmd_expected || fabs(right_vel) < cmd_expected)
       {
         // std::cout << "vel not reached" << std::endl;
@@ -136,8 +136,8 @@ void JackalHardware::publishDriveFromController()
         double *vels;
         vels = accelerate();
 
-        lin_vel_left = vels[0];
-        lin_vel_right = vels[1];
+        // lin_vel_left = vels[0];
+        // lin_vel_right = vels[1];
 
         left_vel = vels[0];
         right_vel = vels[1];
@@ -148,16 +148,16 @@ void JackalHardware::publishDriveFromController()
       }
     } else
     {
-      lin_vel_left = joints_[0].velocity_command;
-      lin_vel_right = joints_[1].velocity_command;
-      left_vel = joints_[0].velocity;
-      right_vel = joints_[1].velocity;
+      // lin_vel_left = joints_[0].velocity_command;
+      // lin_vel_right = joints_[1].velocity_command;
+      left_vel = joints_[0].velocity_command;
+      right_vel = joints_[1].velocity_command;
     }
 
     // Publish drive command
     cmd_drive_pub_.msg_.mode = jackal_msgs::Drive::MODE_VELOCITY;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = lin_vel_left;
-    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = lin_vel_right;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::LEFT] = left_vel;
+    cmd_drive_pub_.msg_.drivers[jackal_msgs::Drive::RIGHT] = right_vel;
     cmd_drive_pub_.unlockAndPublish(); 
   }
 }
