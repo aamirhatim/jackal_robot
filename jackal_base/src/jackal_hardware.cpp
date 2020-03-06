@@ -128,6 +128,7 @@ void JackalHardware::publishDriveFromController()
     {
       // Get current desired speed
       // double cmd_desired = user_cmd.linear.x * 10;
+      std::cout << user_cmd.linear.x << std::endl << user_cmd_lim << std::endl << std::endl;
       if (fabs(user_cmd.linear.x) < fabs(user_cmd_lim))
       {
         user_cmd_lim = user_cmd.linear.x;
@@ -144,28 +145,27 @@ void JackalHardware::publishDriveFromController()
       if (delta_left <= 0.5 && delta_right <= 0.5)
       {
         cmd_vel_reached_ = true;
-      } else
-      {
-        // Calculate acceleration needed to get current actual speed to current desired speed
-        double acc_left = (cmd_desired - v_current_left) / 50.0;
-        double acc_right = (cmd_desired - v_current_right) / 50.0;
-
-        // Saturate acceleration if needed and add that to current speed
-        if (fabs(acc_left) > 0.03)
-        {
-          acc_left = (fabs(acc_left) / acc_left) * 0.03;
-        }
-        if (fabs(acc_right) > 0.03)
-        {
-          acc_right = (fabs(acc_right) / acc_right) * 0.03;
-        }
-
-        // Set left and right speeds
-        left_vel += acc_left;
-        right_vel += acc_right;
-
-        std::cout << cmd_desired << std::endl << right_vel << std::endl << std::endl;
       }
+
+      // Calculate acceleration needed to get current actual speed to current desired speed
+      double acc_left = (cmd_desired - v_current_left) / 50.0;
+      double acc_right = (cmd_desired - v_current_right) / 50.0;
+
+      // Saturate acceleration if needed and add that to current speed
+      if (fabs(acc_left) > 0.03)
+      {
+        acc_left = (fabs(acc_left) / acc_left) * 0.03;
+      }
+      if (fabs(acc_right) > 0.03)
+      {
+        acc_right = (fabs(acc_right) / acc_right) * 0.03;
+      }
+
+      // Set left and right speeds
+      left_vel += acc_left;
+      right_vel += acc_right;
+
+      // std::cout << cmd_desired << std::endl << right_vel << std::endl << std::endl;
 
       // // Implement slow acceleration if user hasn't reached the commanded speed yet
       // double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
