@@ -61,7 +61,7 @@ JackalHardware::JackalHardware()
   // Heartbeat subscriber
   connected_ = false;
   cmd_vel_reached_ = false;
-  user_cmd_lim = 0.0;
+  // user_cmd_lim = 0.0;
   time_last_connected_ = ros::Time::now();
   heartbeat_sub_ = nh_.subscribe("/mec_connection", 1, &JackalHardware::heartbeatCallback, this);
   user_cmd_sub_ = nh_.subscribe("user_cmd", 1, &JackalHardware::updateCommandCallback, this);
