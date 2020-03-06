@@ -99,8 +99,8 @@ void JackalHardware::publishDriveFromController()
   if (cmd_drive_pub_.trylock())
   {
     // Set initial velocity values
-    double lin_vel_left = joints_[0].velocity_command;
-    double lin_vel_right = joints_[1].velocity_command;
+    double lin_vel_left;
+    double lin_vel_right;
 
     // Check if elapsed time is greater than timeout
     if (!connected_)
@@ -140,6 +140,10 @@ void JackalHardware::publishDriveFromController()
         cmd_vel_reached_ = true;
         // std::cout << "vel reached" << std::endl;
       }
+    } else
+    {
+      lin_vel_left = joints_[0].velocity_command;
+      lin_vel_right = joints_[1].velocity_command;
     }
 
     // Publish drive command
