@@ -150,6 +150,8 @@ void JackalHardware::publishDriveFromController()
       left_vel += acc_left;
       right_vel += acc_right;
 
+      std::cout << cmd_expected << std::endl << right_vel << std::endl << std::endl;
+
       // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
       double delta_left = fabs(cmd_desired - left_vel);
       double delta_right = fabs(cmd_desired - right_vel);
