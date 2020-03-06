@@ -127,11 +127,9 @@ void JackalHardware::publishDriveFromController()
     {
       // Implement slow acceleration if user hasn't reached the commanded speed yet
       double cmd_expected = std::max(0.0, fabs(user_cmd.linear.x) * 10.0 - 1.0);
+      std::cout << cmd_expected << std::endl << right_vel << std::endl;
       if (fabs(left_vel) < cmd_expected || fabs(right_vel) < cmd_expected)
       {
-        // std::cout << "vel not reached" << std::endl;
-        // std::cout << cmd_expected << std::endl << right_vel << std::endl;
-
         // Calculate acceleration
         double *vels;
         vels = accelerate();
