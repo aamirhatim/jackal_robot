@@ -128,18 +128,18 @@ void JackalHardware::publishDriveFromController()
       // Get current desired speed
       double cmd_desired = user_cmd.linear.x * 10;
 
+      // Get current actual speed
+      double v_current_left = joints_[0].velocity;
+      double v_current_right = joints_[1].velocity;
+
       // If desired and actual speed are close enough to each other, set cmd_vel_reached_ flag to true
-      double delta_left = fabs(cmd_desired - left_vel);
-      double delta_right = fabs(cmd_desired - right_vel);
+      double delta_left = fabs(cmd_desired - v_current_left);
+      double delta_right = fabs(cmd_desired - v_current_right);
       if (delta_left <= 0.5 && delta_right <= 0.5)
       {
         cmd_vel_reached_ = true;
       } else
       {
-        // Get current actual speed
-        double v_current_left = joints_[0].velocity;
-        double v_current_right = joints_[1].velocity;
-
         // Calculate acceleration needed to get current actual speed to current desired speed
         double acc_left = (cmd_desired - v_current_left) / 50.0;
         double acc_right = (cmd_desired - v_current_right) / 50.0;
