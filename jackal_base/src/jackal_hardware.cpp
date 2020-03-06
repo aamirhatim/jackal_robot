@@ -127,13 +127,13 @@ void JackalHardware::publishDriveFromController()
     } else if (!cmd_vel_reached_)
     {
       // Get current desired speed
-      // double cmd_desired = user_cmd.linear.x * 10;
-      std::cout << user_cmd.linear.x << std::endl << user_cmd_lim << std::endl << std::endl;
-      if (fabs(user_cmd.linear.x) < fabs(user_cmd_lim))
-      {
-        user_cmd_lim = user_cmd.linear.x;
-      }
-      double cmd_desired = user_cmd_lim * 10.0;
+      double cmd_desired = user_cmd.linear.x * 10;
+      // std::cout << user_cmd.linear.x << std::endl << user_cmd_lim << std::endl << std::endl;
+      // if (fabs(user_cmd.linear.x) < fabs(user_cmd_lim))
+      // {
+      //   user_cmd_lim = user_cmd.linear.x;
+      // }
+      // double cmd_desired = user_cmd_lim * 10.0;
 
       // Get current actual speed
       double v_current_left = joints_[0].velocity;
@@ -236,7 +236,7 @@ void JackalHardware::checkTimeout()
     {
       connected_ = false;
       cmd_vel_reached_ = false;
-      user_cmd_lim = user_cmd.linear.x;
+      // user_cmd_lim = user_cmd.linear.x;
     }
   } else
   {
