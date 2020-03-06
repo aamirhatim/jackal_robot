@@ -151,8 +151,9 @@ void JackalHardware::publishDriveFromController()
       //   acc_right = (fabs(acc_right) / acc_right) * 0.06;
       // }
 
+      const double cmd = user_cmd.linear.x * 10;
       double *acc;
-      acc = getAcceleration(user_cmd.linear.x * 10);
+      acc = getAcceleration(cmd);
 
       // if (fabs(acc[0]) <= 0.01 && fabs(acc[1]) <= 0.01)
       // {
