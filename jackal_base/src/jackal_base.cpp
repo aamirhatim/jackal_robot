@@ -61,10 +61,8 @@ void controlThread(ros::Rate rate, jackal_base::JackalHardware* robot, controlle
   time_source::time_point last_time = time_source::now();
 
   // VZW DEV: Get standalone param from parameter server
-  std::string standalone_param;
   bool standalone;
-  ros::param::get("~standalone", standalone_param);
-  standalone = standalone_param == "true";
+  ros::param::param<bool>("standalone", standalone);
   // END VZW DEV
 
   while (1)
