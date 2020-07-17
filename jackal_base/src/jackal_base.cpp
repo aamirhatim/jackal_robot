@@ -62,7 +62,7 @@ void controlThread(ros::Rate rate, jackal_base::JackalHardware* robot, controlle
 
   // VZW DEV: Get standalone param from parameter server
   bool standalone;
-  ros::param::param<bool>("standalone", standalone);
+  ros::param::param<bool>("standalone", standalone, false);
   // END VZW DEV
 
   while (1)
