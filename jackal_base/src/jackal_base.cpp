@@ -60,6 +60,13 @@ void controlThread(ros::Rate rate, jackal_base::JackalHardware* robot, controlle
 {
   time_source::time_point last_time = time_source::now();
 
+  // VZW DEV: Get standalone param from parameter server
+  std::string standalone_param;
+  bool standalone;
+  ros::param::get("~standalone", standalone_param);
+  standalone = standalone_param == "true";
+  // END VZW DEV
+
   while (1)
   {
     // Calculate monotonic time elapsed
@@ -70,7 +77,14 @@ void controlThread(ros::Rate rate, jackal_base::JackalHardware* robot, controlle
 
     robot->copyJointsFromHardware();
     cm->update(ros::Time::now(), elapsed);
-    robot->checkTimeout();
+
+    // VZW DEV: Check for timeout if not in standalone mode
+    if (!standalone)
+    {
+      robot->checkTimeout();
+    }
+    // END VZW DEV
+    
     robot->publishDriveFromController();
     rate.sleep();
   }
